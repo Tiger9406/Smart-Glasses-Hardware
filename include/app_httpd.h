@@ -7,7 +7,7 @@
 
 // Frame types
 #define WS_FRAME_VIDEO 0x01
-#define WS_FRAME_AUDIO_RX 0x02
+#define WS_FRAME_AUDIO_TX 0x02
 
 typedef struct {
     uint8_t *data;
