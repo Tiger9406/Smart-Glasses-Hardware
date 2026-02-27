@@ -2,6 +2,8 @@
 #define APP_HTTPD_H
 
 #include "esp_http_server.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/queue.h"
 
 // Frame types
 #define WS_FRAME_VIDEO 0x01
