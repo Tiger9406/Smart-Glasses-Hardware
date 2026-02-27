@@ -47,39 +47,39 @@ void websocket_send_task(void *pvParameters){
                 }
             }
         }
-	}
 
-	if (xQueueReceive(video_queue, &video_frame, 0) == pdTRUE) {
-		if (ws_fd >= 0) {
-			send_buf = (uint8_t*)malloc(1 + video_frame.len);
-			
-			if (send_buf) {
-				send_buf[0] = WS_FRAME_VIDEO;
-				memcpy(&send_buf[1], video_frame.data, video_frame.len);
-				
-				memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
-				ws_pkt.type = HTTPD_WS_TYPE_BINARY;
-				ws_pkt.payload = send_buf;
-				ws_pkt.len = 1 + video_frame.len;
-				
-				esp_err_t ret = httpd_ws_send_frame_async(server, ws_fd, &ws_pkt);
-				if (ret != ESP_OK) {
-					ESP_LOGE(TAG, "Failed to send video frame: %s", esp_err_to_name(ret));
-					ws_fd = -1; // Connection lost
-				}
-				
-				free(send_buf);
-			} else {
-				ESP_LOGE(TAG, "Failed to allocate memory for video send");
-			}
-		}
-		
-		// Always free the video data after processing
-		free(video_frame.data);
-	}
+        if (xQueueReceive(video_queue, &video_frame, 0) == pdTRUE) {
+            if (ws_fd >= 0) {
+                send_buf = (uint8_t*)malloc(1 + video_frame.len);
+                
+                if (send_buf) {
+                    send_buf[0] = WS_FRAME_VIDEO;
+                    memcpy(&send_buf[1], video_frame.data, video_frame.len);
+                    
+                    memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
+                    ws_pkt.type = HTTPD_WS_TYPE_BINARY;
+                    ws_pkt.payload = send_buf;
+                    ws_pkt.len = 1 + video_frame.len;
+                    
+                    esp_err_t ret = httpd_ws_send_frame_async(server, ws_fd, &ws_pkt);
+                    if (ret != ESP_OK) {
+                        ESP_LOGE(TAG, "Failed to send video frame: %s", esp_err_to_name(ret));
+                        ws_fd = -1; // Connection lost
+                    }
+                    
+                    free(send_buf);
+                } else {
+                    ESP_LOGE(TAG, "Failed to allocate memory for video send");
+                }
+            }
+            
+            // Always free the video data after processing
+            free(video_frame.data);
+        }
 
-	// Small delay to prevent task starvation
-    vTaskDelay(pdMS_TO_TICKS(1));
+        // Small delay to prevent task starvation
+        vTaskDelay(pdMS_TO_TICKS(1));
+    }
 }
 
 static esp_err_t ws_handler(httpd_req_t *req) {
