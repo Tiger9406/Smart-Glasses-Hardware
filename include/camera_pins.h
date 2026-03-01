@@ -296,6 +296,8 @@
 #define HREF_GPIO_NUM  4
 #define PCLK_GPIO_NUM  3
 
+//TODO: Define pins; rn conflict
+
 #elif defined(CAMERA_MODEL_ESP32S3_EYE)
 #define PWDN_GPIO_NUM  -1
 #define RESET_GPIO_NUM -1
