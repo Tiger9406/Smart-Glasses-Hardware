@@ -14,9 +14,9 @@
 #define LED_BRIGHTNESS 128  // 0-255, adjust brightness here
 #endif
 
-#define I2S_BCLK   14
-#define I2S_LRCLK  15
-#define I2S_DOUT   13
+#define I2S_BCLK   19
+#define I2S_LRCLK  21
+#define I2S_DOUT   20
 
 //TODO: to define speaker pins here
 
@@ -68,7 +68,7 @@ void setupI2S() {
         .sample_rate = SAMPLE_RATE,
         .bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT,
         .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
-        .communication_format = I2S_COMM_FORMAT_STAND_I2S,
+        .communication_format = I2S_COMM_FORMAT_I2S,
         .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
         .dma_buf_count = DMA_BUF_CNT,
         .dma_buf_len = DMA_BUF_LEN,
@@ -121,7 +121,7 @@ void camera_task(void *pvParameters){
             esp_camera_fb_return(fb);
         }
         
-        vTaskDelay(pdMS_TO_TICKS(33)); // ~30fps
+        vTaskDelay(pdMS_TO_TICKS(100)); // ~30fps
     }
 }
 
@@ -150,7 +150,9 @@ void audio_tx_task(void *pvParameters) {
         }
         
         // Send to queue
-        xQueueSend(audio_tx_queue, &audio_buf, portMAX_DELAY);
+        if (xQueueSend(audio_tx_queue, &audio_buf, 0) != pdTRUE) {
+            Serial.println("audio queue full, dropping frame");
+        }
     }
 }
 
@@ -182,7 +184,7 @@ void setup() {
     config.pin_pwdn = PWDN_GPIO_NUM;
     config.pin_reset = RESET_GPIO_NUM;
     config.xclk_freq_hz = 20000000;
-    config.frame_size = FRAMESIZE_UXGA;
+    config.frame_size = FRAMESIZE_SVGA;
     config.pixel_format = PIXFORMAT_JPEG;
     config.grab_mode = CAMERA_GRAB_WHEN_EMPTY;
     config.fb_location = CAMERA_FB_IN_PSRAM;
@@ -212,7 +214,7 @@ void setup() {
     s->set_saturation(s, 0);
 
     video_queue=xQueueCreate(2, sizeof(video_frame_t));
-    audio_tx_queue = xQueueCreate(4, sizeof(audio_buffer_t));
+    audio_tx_queue = xQueueCreate(16, sizeof(audio_buffer_t));
 
     if (!video_queue || !audio_tx_queue) {
         Serial.println("Failed to create queues!");
