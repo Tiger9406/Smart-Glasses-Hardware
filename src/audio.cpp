@@ -42,6 +42,7 @@ void audio_tx_task(void *pvParameters) {
     int32_t i2s_in[512];
     audio_buffer_t audio_buf;
     static int32_t dc_sum = 0;
+    // static uint32_t audio_drops = 0;
     
     while (1) {
         i2s_read(I2S_NUM_0, (void*)i2s_in, sizeof(i2s_in), &bytes_read, portMAX_DELAY);
@@ -53,6 +54,10 @@ void audio_tx_task(void *pvParameters) {
             int32_t filtered = i2s_in[i] - dc_sum;
             audio_buf.samples[i] = (int16_t)(filtered >> 14);
         }
-        xQueueSend(audio_tx_queue, &audio_buf, 0);
+        if(xQueueSend(audio_tx_queue, &audio_buf, 0) != pdTRUE){
+            // audio_drops++;
+            // Serial.printf("[AUDIO] Queue full! Dropped audio chunk. Total drops: %u\n", audio_drops);
+            continue;
+        }
     }
 }

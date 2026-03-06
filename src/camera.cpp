@@ -32,7 +32,7 @@ void setupCamera() {
     config.fb_count = 1;
     
     if(psramFound()){
-        config.frame_size = FRAMESIZE_SVGA;
+        config.frame_size = FRAMESIZE_VGA;
         config.jpeg_quality = 10;
         config.fb_count = 2;
         config.grab_mode = CAMERA_GRAB_LATEST;
@@ -52,6 +52,7 @@ void camera_task(void *pvParameters){
     video_frame_t frame;
 
     setLED(true);
+    // static uint32_t video_drops=0;
     
     while (1) {
         fb = esp_camera_fb_get();
@@ -64,6 +65,8 @@ void camera_task(void *pvParameters){
                     
                     if (xQueueSend(video_queue, &frame, 0) != pdTRUE) {
                         free(frame.data);
+                        // video_drops++;
+                        // Serial.printf("[CAMERA] Queue full! Dropped frame. Total drops: %u\n", video_drops);
                     }
                 }
             }
