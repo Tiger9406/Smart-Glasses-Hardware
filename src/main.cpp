@@ -6,10 +6,7 @@
 #include "udp.h"
 #include "led.h"
 
-// network configuration
-const char* ssid = "Poopy Banana Fart";
-const char* password = "Wildcat92";
-const char* server_uri = "ws://172.20.10.2:8000/stream"; 
+#include "secrets.h"
 
 // Define Globals
 QueueHandle_t video_queue = NULL;
