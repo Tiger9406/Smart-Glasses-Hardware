@@ -30,7 +30,7 @@ void setup() {
     setupCamera();
 
     // connect to network
-    setupNetwork(ssid, password, server_uri);
+    setupNetwork(ssid, password, udp_server_ip, port);
 
     // start the tasks; pinned to cores
     xTaskCreatePinnedToCore(camera_task, "camera", 4096, NULL, 4, &camera_task_handle, 1);

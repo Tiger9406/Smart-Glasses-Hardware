@@ -6,7 +6,7 @@
 static int sock = -1;
 static struct sockaddr_in dest_addr;
 
-void setupNetwork(const char* ssid, const char* password, const char* server_ip) {
+void setupNetwork(const char* ssid, const char* password, const char* server_ip, const int port) {
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password);
     Serial.print("Connecting to WiFi");
@@ -18,7 +18,7 @@ void setupNetwork(const char* ssid, const char* password, const char* server_ip)
 
     dest_addr.sin_addr.s_addr = inet_addr(server_ip);
     dest_addr.sin_family = AF_INET;
-    dest_addr.sin_port = htons(8000);
+    dest_addr.sin_port = htons(port);
 
     sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
     if (sock < 0) {
