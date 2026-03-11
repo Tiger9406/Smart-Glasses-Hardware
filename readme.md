@@ -61,7 +61,9 @@ The ESP32 acts as the client, capturing media and pushing it to the server
 ```cpp
 const char* ssid = "Your Wifi Name";
 const char* password = "Your Password";
-const char* server_uri = "<your computer local ip; check wifi settings>";
+const char* ws_server_uri = "ws:<Your ip>:8000/stream";
+const char* udp_server_ip = "<Your IP, ex 192.12.10.2>";
+const int port = 0; //your port here
 
 ```
 
