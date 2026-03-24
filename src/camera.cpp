@@ -43,7 +43,7 @@ void setupCamera() {
     
     esp_camera_init(&config);
     sensor_t * s = esp_camera_sensor_get();
-    s->set_vflip(s, 1);
+    // s->set_vflip(s, 1);
 }
 
 // define camera task of getting data and sending to global queue
