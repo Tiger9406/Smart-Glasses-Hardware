@@ -62,12 +62,24 @@ void camera_task(void *pvParameters){
                 if (frame.data) {
                     memcpy(frame.data, fb->buf, fb->len);
                     frame.len = fb->len;
+
+                    // audio: want to keep as much as possible
+                    // but pictures, chuck old ones out
+                    if (xQueueSend(video_queue, &frame, 0) != pdTRUE) {
+                        video_frame_t old;
+                        if (xQueueReceive(video_queue, &old, 0) == pdTRUE)
+                            free(old.data);
+                        if (xQueueSend(video_queue, &frame, 0) != pdTRUE)
+                            free(frame.data);
+                    }
                     
+                    /*
                     if (xQueueSend(video_queue, &frame, 0) != pdTRUE) {
                         free(frame.data);
                         // video_drops++;
                         // Serial.printf("[CAMERA] Queue full! Dropped frame. Total drops: %u\n", video_drops);
                     }
+                    */
                 }
             }
             esp_camera_fb_return(fb);
