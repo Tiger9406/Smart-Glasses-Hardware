@@ -7,3 +7,7 @@
 .DS_Store
 
 include/secrets.h
+# LTspice outputs
+*.raw
+*.log
+*.net
